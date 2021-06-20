@@ -645,7 +645,7 @@ wire         hdmi_vs, hdmi_hs, hdmi_de, hdmi_vbl;
 `ifndef DEBUG_NOHDMI
 wire clk_hdmi  = hdmi_clk_out;
 
-ascal 
+ascal3d
 #(
 	.RAMBASE(32'h20000000),
 `ifndef USE_FB	
@@ -654,7 +654,7 @@ ascal
 	.N_DW(128),
 	.N_AW(28)
 )
-ascal
+ascal3d
 (
 	.reset_na (~reset_req),
 	.run      (1),
@@ -699,6 +699,7 @@ ascal
 	.vmax     (vmax),
 
 	.mode     ({~lowlat,LFB_EN ? LFB_FLT : |scaler_flt,2'b00}),
+	.ddd      (ddd),
 	.poly_clk (clk_sys),
 	.poly_a   (coef_addr),
 	.poly_dw  (coef_data),
@@ -750,6 +751,8 @@ reg [11:0] LFB_VMAX   = 0;
 reg [31:0] LFB_BASE   = 0;
 reg [13:0] LFB_STRIDE = 0;
 
+wire [1:0] ddd;
+wire       shrink;
 reg        FB_EN     = 0;
 reg  [5:0] FB_FMT    = 0;
 reg [11:0] FB_WIDTH  = 0;
@@ -890,6 +893,12 @@ always @(posedge clk_vid) begin
 				hmaxi <= ((WIDTH  - videow)>>1) + videow - 1'd1;
 				vmini <= ((HEIGHT - videoh)>>1);
 				vmaxi <= ((HEIGHT - videoh)>>1) + videoh - 1'd1;
+				if (shrink) begin
+					hmini <= ((WIDTH  - (videow>>1))>>1);
+					hmaxi <= ((WIDTH  - (videow>>1))>>1) + (videow>>1) - 1'd1;
+					vmini <= ((HEIGHT - (videoh>>1))>>1);
+					vmaxi <= ((HEIGHT - (videoh>>1))>>1) + (videoh>>1) - 1'd1;
+				end
 			end
 	endcase
 	
@@ -1556,6 +1565,8 @@ emu emu
 	.VGA_SL(scanlines),
 	.VIDEO_ARX(ARX),
 	.VIDEO_ARY(ARY),
+	.DDD(ddd),
+	.SHRINK(shrink),
 
 `ifdef USE_FB
 	.FB_EN(fb_en),

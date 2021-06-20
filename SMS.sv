@@ -43,7 +43,11 @@ module emu
 	output [12:0] VIDEO_ARX,
 	output [12:0] VIDEO_ARY,
 
-	output  [7:0] VGA_R,
+	//3D mode
+	output  [1:0] DDD,
+	output        SHRINK,
+
+ 	output  [7:0] VGA_R,
 	output  [7:0] VGA_G,
 	output  [7:0] VGA_B,
 	output        VGA_HS,
@@ -174,7 +178,7 @@ module emu
 );
 
 assign ADC_BUS  = 'Z;
-assign VGA_F1 = 0;
+assign VGA_F1 = ~sscope;
 
 assign {UART_RTS, UART_TXD, UART_DTR} = 0;
 
@@ -186,6 +190,9 @@ assign LED_DISK  = 0;
 assign LED_POWER = 0;
 assign BUTTONS   = 0;
 assign VGA_SCALER= 0;
+
+assign DDD = {status[33],status[33] | status[32]};
+assign SHRINK = status[34];
 
 reg en216p;
 always @(posedge CLK_VIDEO) en216p <= ((HDMI_WIDTH == 1920) && (HDMI_HEIGHT == 1080) && !forced_scandoubler && !scale);
@@ -209,7 +216,7 @@ video_freak video_freak
 // 0         1         2         3          4         5         6   
 // 01234567890123456789012345678901 23456789012345678901234567890123
 // 0123456789ABCDEFGHIJKLMNOPQRSTUV 0123456789ABCDEFGHIJKLMNOPQRSTUV
-// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX XXX
 
 `include "build_id.v"
 parameter CONF_STR = {
@@ -234,6 +241,8 @@ parameter CONF_STR = {
 	"P1,Audio & Video;",
 	"P1-;",
 	"P1O2,TV System,NTSC,PAL;",
+        "P1o01,3D side by side,No,Autodetect,Always;",
+	"P1o2,3D shrink,No,Yes;",
 	"P1OQR,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
 	"P1O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",
 	"P1-;",
@@ -516,6 +525,8 @@ wire        nvram_we;
 wire  [7:0] nvram_d;
 wire  [7:0] nvram_q;
 
+wire        sscope;
+
 system #(63) system
 (
 	.clk_sys(clk_sys),
@@ -570,6 +581,7 @@ system #(63) system
 	.pal(pal),
 	.region(status[10]),
 	.mapper_lock(status[15]),
+	.sscope(sscope),
 
 	.fm_ena(~status[12] | gg),
 	.audioL(audio_l),
