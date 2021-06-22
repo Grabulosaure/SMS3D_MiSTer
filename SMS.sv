@@ -191,8 +191,8 @@ assign LED_POWER = 0;
 assign BUTTONS   = 0;
 assign VGA_SCALER= 0;
 
-assign DDD = {status[33],status[33] | status[32]};
-assign SHRINK = status[34];
+assign DDD = {status[34],status[34] | status[33]};
+assign SHRINK = status[35];
 
 reg en216p;
 always @(posedge CLK_VIDEO) en216p <= ((HDMI_WIDTH == 1920) && (HDMI_HEIGHT == 1080) && !forced_scandoubler && !scale);
@@ -216,7 +216,7 @@ video_freak video_freak
 // 0         1         2         3          4         5         6   
 // 01234567890123456789012345678901 23456789012345678901234567890123
 // 0123456789ABCDEFGHIJKLMNOPQRSTUV 0123456789ABCDEFGHIJKLMNOPQRSTUV
-// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX XXX
+// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX XXXX
 
 `include "build_id.v"
 parameter CONF_STR = {
@@ -241,8 +241,8 @@ parameter CONF_STR = {
 	"P1,Audio & Video;",
 	"P1-;",
 	"P1O2,TV System,NTSC,PAL;",
-        "P1o01,3D side by side,No,Autodetect,Always;",
-	"P1o2,3D shrink,No,Yes;",
+	"P1o12,3D side by side,No,Autodetect,Always;",
+	"P1o3,3D shrink,No,Yes;",
 	"P1OQR,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
 	"P1O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",
 	"P1-;",

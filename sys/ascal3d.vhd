@@ -1093,7 +1093,9 @@ BEGIN
         
         -- Detects end of frame for triple buffering.
         i_endframe0<=i_vs AND (NOT i_inter OR i_flm);
-        i_endframe1<=i_vs AND (NOT i_inter OR NOT i_flm);
+--      i_endframe1<=i_vs AND (NOT i_inter OR NOT i_flm);
+        i_endframe1<=i_vs AND (NOT i_inter OR
+                               (i_flm XOR to_std_logic(i_ddd=0)));
         
         i_vss<=to_std_logic(i_vcpt>=i_vmin AND i_vcpt<=i_vmax);
         
