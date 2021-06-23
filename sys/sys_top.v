@@ -700,6 +700,7 @@ ascal3d
 
 	.mode     ({~lowlat,LFB_EN ? LFB_FLT : |scaler_flt,2'b00}),
 	.ddd      (ddd),
+	.ddd_off  (ddd_off),
 	.poly_clk (clk_sys),
 	.poly_a   (coef_addr),
 	.poly_dw  (coef_data),
@@ -752,6 +753,7 @@ reg [31:0] LFB_BASE   = 0;
 reg [13:0] LFB_STRIDE = 0;
 
 wire [1:0] ddd;
+wire [5:0] ddd_off;
 wire       shrink;
 reg        FB_EN     = 0;
 reg  [5:0] FB_FMT    = 0;
@@ -1566,6 +1568,7 @@ emu emu
 	.VIDEO_ARX(ARX),
 	.VIDEO_ARY(ARY),
 	.DDD(ddd),
+	.DDD_OFF(ddd_off),
 	.SHRINK(shrink),
 
 `ifdef USE_FB

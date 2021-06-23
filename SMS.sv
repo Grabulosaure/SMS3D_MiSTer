@@ -45,6 +45,7 @@ module emu
 
 	//3D mode
 	output  [1:0] DDD,
+	output  [5:0] DDD_OFF,
 	output        SHRINK,
 
  	output  [7:0] VGA_R,
@@ -178,7 +179,7 @@ module emu
 );
 
 assign ADC_BUS  = 'Z;
-assign VGA_F1 = ~sscope;
+assign VGA_F1 = sscope;
 
 assign {UART_RTS, UART_TXD, UART_DTR} = 0;
 
@@ -192,7 +193,21 @@ assign BUTTONS   = 0;
 assign VGA_SCALER= 0;
 
 assign DDD = {status[34],status[34] | status[33]};
+
 assign SHRINK = status[35];
+
+always @(status) begin
+   case (status[38:36])
+         0 : DDD_OFF =6'h00;
+         1 : DDD_OFF =6'h08;
+         2 : DDD_OFF =6'h10;
+         3 : DDD_OFF =6'h18;
+         4 : DDD_OFF =6'h20;
+         5 : DDD_OFF =6'h3F-6'h08;
+         6 : DDD_OFF =6'h3F-6'h10;
+         default : DDD_OFF =6'h3F-6'h18;
+    endcase
+end
 
 reg en216p;
 always @(posedge CLK_VIDEO) en216p <= ((HDMI_WIDTH == 1920) && (HDMI_HEIGHT == 1080) && !forced_scandoubler && !scale);
@@ -243,6 +258,7 @@ parameter CONF_STR = {
 	"P1O2,TV System,NTSC,PAL;",
 	"P1o12,3D side by side,No,Autodetect,Always;",
 	"P1o3,3D shrink,No,Yes;",
+	"P1o46,3D offset,0,+8,+16,+24,+32,-8,-16,-24;",
 	"P1OQR,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
 	"P1O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",
 	"P1-;",

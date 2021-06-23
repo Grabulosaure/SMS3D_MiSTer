@@ -212,6 +212,7 @@ ENTITY ascal3d IS
     -- RGB   |    <#IMAGE#>      ^HDISP                  |
     --            ^HMIN   ^HMAX        ^HSSTART  ^HSEND  ^HTOTAL
     ddd     : IN unsigned(1 DOWNTO 0); -- 3D mode
+    ddd_off : IN signed(5 DOWNTO 0) := "000000";
     
     htotal  : IN natural RANGE 0 TO 4095;
     hsstart : IN natural RANGE 0 TO 4095;
@@ -1751,10 +1752,10 @@ BEGIN
       
       IF (o_ddd="01" AND o_inter='1') OR o_ddd="11" THEN
         o_hsize <=o_hsizep/2;
-        o_hmina <=o_hmin/2;
-        o_hmaxa <=o_hdisp/2 - o_hmin/2 -1;
-        o_hminb <=o_hdisp/2 + o_hmin/2;
-        o_hmaxb <=o_hdisp - o_hmin/2 - 1;
+        o_hmina <=o_hmin/2 - to_integer(ddd_off);
+        o_hmaxa <=o_hdisp/2 - o_hmin/2 -1 - to_integer(ddd_off);
+        o_hminb <=o_hdisp/2 + o_hmin/2 + to_integer(ddd_off);
+        o_hmaxb <=o_hdisp - o_hmin/2 - 1 + to_integer(ddd_off);
       ELSE
         o_hsize <=o_hsizep;
         o_hmina <=o_hmin;
